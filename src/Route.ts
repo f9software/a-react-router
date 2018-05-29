@@ -21,7 +21,6 @@ export class Route extends React.Component<RouteProps, RouteState> {
 
     private static getDerivedStateFromProps(nextProps: RouteProps, prevState?: RouteState): RouteState {
         const path = nextProps.path;
-        const queryParams = nextProps.queryParams;
         const paramNameRegex = Route.paramNameRegex;
         let params: string[] = path.match(paramNameRegex) || [];    // we match all params in form of :paramName
 
@@ -38,11 +37,13 @@ export class Route extends React.Component<RouteProps, RouteState> {
             pattern += '$';
         }
 
+        const router = Router.getInstance();
+
         return {
             params: params,
             regex: new RegExp(pattern),
-            path: path,
-            queryParams: queryParams
+            path: router.getPath(),
+            queryParams: router.getQueryParams()
         };
     }
 
