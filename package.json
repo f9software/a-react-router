@@ -1,0 +1,33 @@
+{
+  "name": "a-react-router",
+  "version": "1.0.0",
+  "description": "I found the react-router too complex for my needs. a-react-router is very simple, so that it only routes a location to a component.",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/f9software/a-react-router.git"
+  },
+  "keywords": [
+    "react-router",
+    "router",
+    "react",
+    "routing",
+    "react",
+    "route",
+    "route",
+    "routing"
+  ],
+  "author": "F9 Software",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/f9software/a-react-router/issues"
+  },
+  "homepage": "https://github.com/f9software/a-react-router#readme",
+  "dependencies": {
+    "@types/react": "^16.3.14",
+    "react": "^16.4.0"
+  }
+}
