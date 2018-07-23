@@ -1,9 +1,10 @@
 {
   "name": "a-react-router",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "I found the react-router too complex for my needs. a-react-router is very simple, so that it only routes a location to a component.",
   "main": "./dist/index.js",
   "scripts": {
+    "tsc": "./node_modules/.bin/tsc -p ./tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,5 +30,8 @@
   "dependencies": {
     "@types/react": "^16.3.14",
     "react": "^16.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^2.9.2"
   }
 }
