@@ -1,2 +1,3 @@
-export * from './src/Router';
-export * from './src/Route';
+export * from './src/index';
+
+let x = '';

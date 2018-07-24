@@ -17,8 +17,8 @@ export class BrowserRouter extends React.Component<any, State> {
         }
     }
 
-    constructor() {
-        super({});
+    constructor(props: any = undefined) {
+        super(props);
 
         this.state = {
             url: window.location.pathname
