@@ -37,13 +37,11 @@ export class Route extends React.Component<RouteProps, RouteState> {
             pattern += '$';
         }
 
-        const router = Router.getInstance();
-
         return {
             params: params,
             regex: new RegExp(pattern),
-            path: router.getPath(),
-            queryParams: router.getQueryParams()
+            path: Router.getInstance().getPath(),
+            queryParams: Router.getInstance().getQueryParams()
         };
     }
 
@@ -51,6 +49,9 @@ export class Route extends React.Component<RouteProps, RouteState> {
         super(props);
 
         this.state = {};
+
+        // since the router may be used on the server, we need to register the route here as componentDidMount is 
+        // not called on SSR
         Router.getInstance().registerRoute(this);
     }
 
