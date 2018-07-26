@@ -21,7 +21,7 @@ export class BrowserRouter extends React.Component<any, State> {
         super(props);
 
         this.state = {
-            url: window.location.pathname
+            url: ''
         };
 
         this.onPopState = this.onPopState.bind(this);
@@ -30,6 +30,7 @@ export class BrowserRouter extends React.Component<any, State> {
     componentDidMount() {
         window.addEventListener('popstate', this.onPopState);
         BrowserRouter.instance = this;
+        BrowserRouter.pushState(window.location.pathname);
     }
 
     componentWillUnmount() {

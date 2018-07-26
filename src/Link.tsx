@@ -9,7 +9,7 @@ export class Link extends React.Component<React.DetailedHTMLProps<React.AnchorHT
 
     onClick(e: React.MouseEvent<HTMLAnchorElement>) {
         e.preventDefault();
-        BrowserRouter.pushState((e.target as HTMLAnchorElement).href);
+        BrowserRouter.pushState(e.currentTarget.href);
     }
 
     render() {
