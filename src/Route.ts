@@ -48,11 +48,16 @@ export class Route extends React.Component<RouteProps, RouteState> {
     constructor(props: RouteProps) {
         super(props);
 
-        this.state = {};
+        let router = Router.getInstance();
 
         // since the router may be used on the server, we need to register the route here as componentDidMount is 
         // not called on SSR
-        Router.getInstance().registerRoute(this);
+        router.registerRoute(this);
+
+        this.state = {
+            path: router.getPath(),
+            queryParams: router.getQueryParams()
+        };
     }
 
     sync(path: string, queryParams: {[key: string]: string}) {

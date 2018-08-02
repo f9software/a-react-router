@@ -8,6 +8,11 @@ export class Link extends React.Component<React.DetailedHTMLProps<React.AnchorHT
     }
 
     onClick(e: React.MouseEvent<HTMLAnchorElement>) {
+        // if user presses ctrl/command key, then we don't want to let it run with the default behaviour
+        if (e.ctrlKey || e.metaKey) {
+            return;
+        }
+
         e.preventDefault();
         BrowserRouter.pushState(e.currentTarget.href);
     }

@@ -20,9 +20,18 @@ export class BrowserRouter extends React.Component<any, State> {
     constructor(props: any = undefined) {
         super(props);
 
+        // at this time we need to make sure that we collect any available information
+        const path = window.location.pathname;
+        const queryParams = {};
+        const url = path + window.location.search || '';
+
+        // we set url into state
         this.state = {
-            url: ''
+            url: url
         };
+
+        // we update the router
+        Router.getInstance().setLocation(path, queryParams);
 
         this.onPopState = this.onPopState.bind(this);
     }
@@ -30,7 +39,6 @@ export class BrowserRouter extends React.Component<any, State> {
     componentDidMount() {
         window.addEventListener('popstate', this.onPopState);
         BrowserRouter.instance = this;
-        BrowserRouter.pushState(window.location.pathname);
     }
 
     componentWillUnmount() {
