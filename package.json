@@ -29,7 +29,7 @@
   "homepage": "https://github.com/f9software/a-react-router#readme",
   "dependencies": {
     "@types/react": "^16.4.10",
-    "ii-observable": "0.0.2",
+    "ii-observable": "^1.0.0",
     "react": "^16.4.2"
   },
   "devDependencies": {
