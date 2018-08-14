@@ -1,6 +1,7 @@
 import {Route} from "./Route";
+import {Observable} from 'ii-observable';
 
-export class Router {
+export class Router extends Observable {
     private static instance: Router;
 
     public static getInstance(): Router {
@@ -17,11 +18,19 @@ export class Router {
 
     private routes: Route[] = [];
 
+    initEvents() {
+        return [
+            'locationchange'
+        ];
+    }
+
     public setLocation(path: string, queryParams: {[key: string]: string}): void {
         this.path = path;
         this.queryParams = queryParams;
 
         this.routes.forEach(route => route.sync(path, queryParams));
+
+        this.fireEvent('locationchange', path, queryParams);
     }
 
     public getPath(): string {
