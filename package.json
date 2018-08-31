@@ -1,6 +1,6 @@
 {
   "name": "a-react-router",
-  "version": "1.0.17",
+  "version": "1.0.20",
   "description": "I found the react-router too complex for my needs. a-react-router is very simple, so that it only routes a location to a component.",
   "main": "./dist/index.js",
   "scripts": {
