@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { Router } from './Router';
 
-export interface Props {}   
+export interface Props {
+    // onHashChange: () => boolean | undefined;
+    interceptHashChange: (url: string, oldUrl: string) => string | undefined;
+}
 
 interface State {
     url: string;
@@ -26,8 +29,25 @@ export class HashRouter extends React.Component<Props, State> {
 
     private onHashChange(e: HashChangeEvent) {
         const hashUrl = this.readHashUrl();
-        this.setState({url: hashUrl});
-        this.updateRouter(hashUrl);
+        const intercept = this.props.interceptHashChange;
+        let redirectUrl = '';
+
+        if (intercept) {
+            const interceptUrl = intercept(hashUrl, this.state.url);
+
+            if (interceptUrl !== undefined && interceptUrl !== hashUrl) {
+                // redirect
+                redirectUrl = interceptUrl;
+            }
+        }
+
+        if (redirectUrl === '') {
+            this.setState({url: hashUrl});
+            this.updateRouter(hashUrl);
+        }
+        else {
+            window.location.href = '#' + redirectUrl;
+        }
     }
 
     componentDidMount() {
