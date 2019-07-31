@@ -1,5 +1,5 @@
-import {Route} from "./Route";
 import {Observable} from 'ii-observable';
+import { Route, RouteMatch } from './Route';
 
 export class Router extends Observable {
     private static instance: Router;
@@ -12,25 +12,43 @@ export class Router extends Observable {
         return this.instance;
     }
 
+    // current path
     private path: string = '';
 
+    // current query params
     private queryParams: {[key: string]: string} = {};
 
+    // registered routes
     private routes: Route[] = [];
 
-    initEvents() {
+    protected initEvents() {
         return [
             'locationchange'
         ];
     }
 
+    /**
+     * Set current location.
+     * @param path 
+     * @param queryParams 
+     */
     public setLocation(path: string, queryParams: {[key: string]: string}): void {
         this.path = path;
         this.queryParams = queryParams;
 
-        this.routes.forEach(route => route.sync(path, queryParams));
-
+        // fire the event
         this.fireEvent('locationchange', path, queryParams);
+
+        // match routes and update component state
+        for (let i = 0; i < this.routes.length; i++) {
+            this.matchRoute(this.routes[i]);
+        }
+    }
+
+    private matchRoute(route: Route): RouteMatch | null {
+        const match = route.match(this.path);
+        route.updateComponents(match);
+        return match;
     }
 
     public getPath(): string {
@@ -43,6 +61,7 @@ export class Router extends Observable {
 
     public registerRoute(route: Route) {
         this.routes.push(route);
+        this.matchRoute(route);
     }
 
     public unregisterRoute(route: Route) {

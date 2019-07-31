@@ -1,5 +1,6 @@
-import {Router} from './Router';
+import {Router} from '../Router';
 import * as React from 'react';
+import * as qs from 'qs';
 
 interface State {
     url: string;
@@ -50,7 +51,7 @@ export class BrowserRouter extends React.Component<any, State> {
         Router.getInstance().setLocation(window.location.pathname, {});
     }
 
-    render() {
+    public render() {
         return (this.props.children);
     }
 }

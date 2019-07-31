@@ -1,101 +1,131 @@
-import * as React from 'react';
-import {Router} from './Router';
+import { Router } from "./Router";
+import { Route as RouteComponent } from './components/Route';
 
-export interface RouteProps {
-    queryParams?: {[key: string]: string};
-    render?: (params: {[key: string]: string}) => React.ReactElement<any>;
-    component?: React.ReactElement<any>;
+const map: Record<string, Route> = {};
+
+const regexUrlParamName = /:(\w+)/ig;
+
+/**
+ * Example url: /leaderboard/:userId/:exchangeId
+ * 
+ * Result:
+ * {
+ *  regexp: /leaderboard/(.*)/(.*),
+ *  params: ['userId', 'exchangeId']
+ * }
+ * 
+ * @param url 
+ */
+function buildMetadata(url: string): RouteMetadata {
+    const matchedUrl = url;
+    const params: string[] = [];
+
+    let match: RegExpMatchArray | null = null;
+    while (match = matchedUrl.match(regexUrlParamName)) {
+        matchedUrl.replace(match[1], '(\\w+)');
+        params.push(match[1]);
+    }
+
+    const metadata = {
+        path: url,
+        regex: new RegExp(matchedUrl),
+        params,
+    };
+
+    Object.freeze(metadata);
+
+    return metadata;
+}
+
+export interface RouteMetadata {
+    path: string;   // /leaderboard/:userId/:exchangeId
+    regex: RegExp;  // /\/leaderboard\/(.*)\/:exchangeId/i
+    params: string[];   // ['userId', 'exchangeId']
+}
+
+export interface RouteMatch {
     path: string;
-    exact: boolean;
+    params: {[name: string]: string} | null;
 }
 
-interface RouteState {
-    params?: string[];
-    regex?: RegExp;
-    path?: string;
-    queryParams?: {[key: string]: string};
-}
+export class Route {
+    public static findRouteById(id: string): Route | undefined {
+        return map[id];
+    }
 
-export class Route extends React.Component<RouteProps, RouteState> {
-    private static paramNameRegex: RegExp = /(:[a-z]*)/gi;
+    private metadata: RouteMetadata;
+    private components: RouteComponent[] = [];
 
-    private static getDerivedStateFromProps(nextProps: RouteProps, prevState?: RouteState): RouteState {
-        const path = nextProps.path;
-        const paramNameRegex = Route.paramNameRegex;
-        let params: string[] = path.match(paramNameRegex) || [];    // we match all params in form of :paramName
+    public constructor(private readonly id: string, private path: string) {
+        map[id] = this;
 
-        let pattern = path
-            .replace(/\//g, '\\/')
-            .replace(/\?/g, '\\?');
+        this.metadata = buildMetadata(path);
+        Router.getInstance().registerRoute(this);
+    }
 
-        if (params.length > 0) {
-            params = params.map(param => param.substring(1));
-            pattern = pattern.replace(paramNameRegex, '([a-z0-9\\-]*)');
+    public getId() {
+        return this.id;
+    }
+
+    public getPath() {
+        return this.path;
+    }
+
+    public getMetadata() {
+        return this.metadata;
+    } 
+
+    public registerComponent(component: RouteComponent) {
+        this.components.push(component);
+    }
+
+    public unregisterComponent(component: RouteComponent) {
+        const index = this.components.indexOf(component);
+        if (index > -1) {
+            this.components.splice(index, 1);
+        }
+    }
+
+    public match(path: string): RouteMatch | null {
+        const md = this.metadata;
+        const match = path.match(md.regex);
+
+        if (!match) {
+            return null;
         }
 
-        if (nextProps.exact) {
-            pattern += '$';
+        let params: {[key: string]: string} | null = null;
+        if (md.params) {
+            params = {};
+            md.params.forEach(
+                (name, index) => {
+                    params![name] = match[index + 1];
+                }
+            );
         }
 
         return {
-            params: params,
-            regex: new RegExp(pattern),
-            path: Router.getInstance().getPath(),
-            queryParams: Router.getInstance().getQueryParams()
+            path,
+            params,
         };
     }
 
-    constructor(props: RouteProps) {
-        super(props);
-
-        let router = Router.getInstance();
-
-        // since the router may be used on the server, we need to register the route here as componentDidMount is 
-        // not called on SSR
-        router.registerRoute(this);
-
-        this.state = {
-            path: router.getPath(),
-            queryParams: router.getQueryParams()
-        };
+    public updateComponents(match: RouteMatch | null) {
+        this.components.forEach((c) => c.setState({match}));
     }
 
-    sync(path: string, queryParams: {[key: string]: string}) {
-        this.setState({path: path, queryParams: queryParams});
+    public url(params: {[key: string]: string}) {
+        const md = this.metadata;
+        let url = md.path;
+
+        md.params
+            .sort((a, b) => a.length - b.length)
+            .forEach((p) => url = url.replace(':' + p, params[p]));
+
+        return url;
     }
 
-    componentWillUnmount() {
+    public destroy() {
         Router.getInstance().unregisterRoute(this);
-    }
-
-    render() {
-        const props = this.props;
-        const state = this.state;
-
-        const path = state.path as string;
-        const regex = state.regex as RegExp;
-        const match = path.match(regex);
-        const paramNames = state.params as string[];
-
-        if (match) {
-            const params: {[key: string]: string} = {};
-            paramNames.forEach((param: string, index: number) => params[param] = match[index + 1]);
-
-            const propsQueryParams = props.queryParams;
-            const stateQueryParams = state.queryParams;
-            if (propsQueryParams && stateQueryParams) {
-                Object.keys(propsQueryParams)
-                    .forEach(qp => params[propsQueryParams[qp]] = stateQueryParams[qp]);
-            }
-
-            if (props.component) {
-                return React.cloneElement(props.component, params);
-            }
-            else if (props.render) {
-                return props.render(params)
-            }
-        }
-
-        return null;
     }
 }

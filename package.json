@@ -1,6 +1,6 @@
 {
   "name": "a-react-router",
-  "version": "1.0.21",
+  "version": "1.1.0",
   "description": "I found the react-router too complex for my needs. a-react-router is very simple, so that it only routes a location to a component.",
   "main": "./dist/index.js",
   "scripts": {
@@ -28,11 +28,13 @@
   },
   "homepage": "https://github.com/f9software/a-react-router#readme",
   "dependencies": {
-    "@types/react": "^16.4.10",
+    "@types/react": "^16.8.23",
     "ii-observable": "^1.0.0",
-    "react": "^16.4.2"
+    "qs": "^6.7.0",
+    "react": "^16.8.6"
   },
   "devDependencies": {
+    "@types/qs": "^6.5.3",
     "typescript": "^2.9.2"
   }
 }
